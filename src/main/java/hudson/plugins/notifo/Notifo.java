@@ -4,6 +4,7 @@ import hudson.model.BuildListener;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -41,7 +42,11 @@ public class Notifo
 
             try
             {
-                client.executeMethod( post );
+                int rc;
+                
+                if ((rc=client.executeMethod( post )) != HttpStatus.SC_OK) {
+                  listener.error("Bad status code %d received from Notifo for user %s", rc, username);
+                }
             } catch ( Exception e )
             {
                 e.printStackTrace( listener.error( "Unable to send message to Notifo API for username: %s", username ) );
